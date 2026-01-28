@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloom Haven by Led | Premium Boutique</title>
+    <style>
+        :root {
+            --primary-green: #4a5d4e;
+            --accent-gold: #d4a373;
+            --soft-cream: #fdfaf6;
+            --text-dark: #2d2d2d;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--soft-cream);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 10%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-green);
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            align-items: center;
+        }
+
+        .nav-links li { margin-left: 2.5rem; }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover { color: var(--primary-green); }
+
+        .cart-count-badge {
+            background: var(--primary-green);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        .hero {
+            height: 60vh;
+            background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)), 
+                        url('https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 0 20px;
+        }
+
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+
+        .shop-section { padding: 60px 10%; }
+        .category-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; flex-wrap: wrap; }
+        
+        .cat-btn {
+            padding: 8px 20px;
+            border: 1px solid var(--primary-green);
+            background: transparent;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cat-btn.active, .cat-btn:hover { background: var(--primary-green); color: white; }
+
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: 0.3s;
+        }
+
+        .product-img { height: 250px; background-size: cover; background-position: center; }
+        .product-info { padding: 20px; text-align: center; }
+        .add-btn { width: 100%; padding: 10px; border: none; background: var(--accent-gold); color: white; border-radius: 5px; cursor: pointer; }
+
+        .content-section { padding: 80px 10%; background: var(--white); text-align: center; }
+        .content-section:nth-child(even) { background: var(--soft-cream); }
+        .content-section h2 { color: var(--primary-green); margin-bottom: 20px; font-size: 2.5rem; }
+        .content-section p { max-width: 800px; margin: 0 auto 30px; color: #666; }
+
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            text-align: left;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .contact-info-left {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .contact-info-left h3 {
+            color: var(--primary-green);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .info-item { margin-bottom: 25px; }
+
+        .info-item h4 {
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .contact-form-right {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .contact-form { display: grid; gap: 15px; }
+        .contact-form input, .contact-form textarea { padding: 12px; border: 1px solid #ddd; border-radius: 5px; width: 100%; }
+        .submit-btn { background: var(--primary-green); color: white; border: none; padding: 15px; border-radius: 5px; cursor: pointer; }
+
+        /* ──────────────────────────────────────────────── */
+        /* Updated Cart Sidebar (Checkout View) */
+        /* ──────────────────────────────────────────────── */
+        .cart-sidebar {
+            position: fixed;
+            top: 0; right: -400px;
+            width: 380px; height: 100%;
+            background: white;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            z-index: 2000;
+            transition: 0.4s;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            color: #333;
+        }
+
+        .cart-sidebar.open { right: 0; }
+        
+        .cart-sidebar h2 { 
+            font-size: 1.8rem; 
+            margin-bottom: 20px; 
+            color: #333;
+        }
+
+        .cart-items { flex-grow: 1; overflow-y: auto; }
+
+        .cart-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; 
+            margin-bottom: 20px; 
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0; 
+        }
+
+        .item-details h3 { font-size: 1.1rem; margin-bottom: 2px; color: #444; }
+        .item-details p { font-size: 0.9rem; color: #888; }
+
+        .qty-controls { display: flex; align-items: center; gap: 12px; }
+        
+        .qty-btn { 
+            background: #fff; 
+            border: 1px solid #ddd; 
+            width: 30px; height: 30px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 1.1rem;
+        }
+
+        .item-price { font-weight: bold; font-size: 1.1rem; color: #333; min-width: 80px; text-align: right; }
+
+        .cart-footer {
+            margin-top: 20px;
+            border-top: 2px solid #f0f0f0;
+            padding-top: 20px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .checkout-btn { 
+            background: #d4a373; /* Updated color */
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 1.1rem; 
+            font-weight: 500;
+        }
+
+        /* ──────────────────────────────────────────────── */
+        /* Updated Receipt Modal (White Background) */
+        /* ──────────────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .receipt-card {
+            background: #ffffff; 
+            padding: 28px 24px;
+            border-radius: 8px;
+            width: 380px;
+            max-width: 92%;
+            font-family: 'Courier New', Courier, monospace;
+            color: #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+            line-height: 1.4;
+            border: 1px solid #eee;
+        }
+
+        .receipt-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .receipt-subtitle {
+            text-align: center;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .receipt-date {
+            text-align: center;
+            font-size: 0.82rem;
+            margin: 10px 0 18px;
+        }
+
+        .receipt-line {
+            border-top: 2px dashed #000;
+            margin: 14px 0;
+        }
+
+        .receipt-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 7px 0;
+            font-size: 0.98rem;
+        }
+
+        .receipt-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: 1.08rem;
+            margin-top: 10px;
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .btn-wait {
+            flex: 1;
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        footer { background: var(--primary-green); color: white; text-align: center; padding: 40px; }
+    </style>
+</head>
+<body>
+
+    <div id="receipt-modal" class="modal-overlay">
+        <div class="receipt-card" id="receipt-content"></div>
+    </div>
+
+    <div id="cart-sidebar" class="cart-sidebar">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>Your Order</h2>
+            <button onclick="toggleCart()" style="border:none; background:none; cursor:pointer; font-size:1.5rem;">✕</button>
+        </div>
+        
+        <div id="cart-items-list" class="cart-items">
+            <p style="text-align: center; color: #999; margin-top: 20px;">Your cart is empty</p>
+        </div>
+
+        <div id="cart-total-area" class="cart-footer" style="display:none;">
+            <div class="total-row">
+                <span>Total:</span>
+                <span id="cart-total-price">₱0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="generateReceipt()">Proceed to Checkout</button>
+        </div>
+    </div>
+
+    <nav>
+        <div class="logo">BLOOM HAVEN by Led</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#shop">Collection</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a onclick="toggleCart()">Cart <span id="cart-count" class="cart-count-badge">0</span></a></li>
+        </ul>
+    </nav>
+
+    <header id="home" class="hero">
+        <h1>Elegance in Every Bloom</h1>
+        <p>Your premier destination for luxury floral design.</p>
+    </header>
+
+    <section id="shop" class="shop-section">
+        <div class="section-title" style="text-align: center; margin-bottom: 30px;">
+            <h2 id="category-title">Our Collections</h2>
+        </div>
+
+        <div class="category-nav">
+            <button class="cat-btn active" onclick="filterCategory('All')">All</button>
+            <button class="cat-btn" onclick="filterCategory('Roses')">Roses</button>
+            <button class="cat-btn" onclick="filterCategory('Tulips')">Tulips</button>
+            <button class="cat-btn" onclick="filterCategory('Lilies')">Lilies</button>
+            <button class="cat-btn" onclick="filterCategory('Sunflowers')">Sunflowers</button>
+            <button class="cat-btn" onclick="filterCategory('Orchids')">Orchids</button>
+        </div>
+
+        <div class="product-grid" id="product-grid"></div>
+    </section>
+
+    <section id="about" class="content-section">
+        <h2>About Petals & Prose</h2>
+        <p>Founded on the belief that flowers are the earth's most poetic language, we curate high-end arrangements that speak for you. Every petal is hand-selected from sustainable farms to ensure your moments are wrapped in beauty and freshness.</p>
+    </section>
+
+    <section id="contact" class="content-section">
+        <h2>Contact Us</h2>
+        <p>Have a custom request or questions about an order? We'd love to hear from you.</p>
+        
+        <div class="contact-container">
+            <div class="contact-info-left">
+                <h3>Get in touch</h3>
+                
+                <div class="info-item">
+                    <h4>Location</h4>
+                    <p>17 Marty's Street, Imus Cavite<br>Philippines, 4103</p>
+                </div>
+
+                <div class="info-item">
+                    <h4>Email Us</h4>
+                    <p>hello@bloomhaven.com<br>support@bloomhaven.com</p>
+                </div>
+
+                <div class="info-item">
+                    <h4>Store Hours</h4>
+                    <p>Tuesday - Friday: 9:00 AM - 9:00 PM<br>
+                       Saturday - Sunday: 10:00 AM - 5:00 PM<br>
+                       Monday: Closed</p>
+                </div>
+            </div>
+
+            <div class="contact-form-right">
+                <form class="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully!');">
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email Address" required>
+                    <textarea rows="5" placeholder="How can we help you?" required></textarea>
+                    <button type="submit" class="submit-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Bloom Haven by Led. Handcrafted Beauty.</p>
+        <p>Ledrell Stracyr Jerus BO3DD</p>
+    </footer>
+
+    <script>
+        let cart = {}; 
+
+        const flowerData = {
+            'Roses': [
+                { id: 1, name: 'Red Velvet', price: 450, img: 'Red Velvet.jpg' },
+                { id: 2, name: 'White Grace', price: 420, img: 'White Grace.jpg' },
+                { id: 3, name: 'Pink Blush', price: 380, img: 'Pink Blush.jpg' },
+                { id: 4, name: 'Sunset Orange', price: 400, img: 'Sunset Orange.jpg' },
+                { id: 5, name: 'Midnight Purple', price: 500, img: 'Midnight Purple.jpg' }
+            ],
+            'Tulips': [
+                { id: 6, name: 'Yellow Dream', price: 300, img: 'Yellow Dream.jpg' },
+                { id: 7, name: 'Royal Purple', price: 320, img: 'Royal Purple.jpg' },
+                { id: 8, name: 'Spring Mix', price: 350, img: 'Spring Mix.jpg' },
+                { id: 9, name: 'Pure White', price: 280, img: 'Pure White.jpg' },
+                { id: 10, name: 'Crimson Tulip', price: 310, img: 'Crimson Tulip.jpg' }
+            ],
+            'Lilies': [
+                { id: 11, name: 'Stargazer', price: 550, img: 'Stargazer.jpg' },
+                { id: 12, name: 'Peace Lily', price: 400, img: 'Peace Lily.jpg' },
+                { id: 13, name: 'Tiger Lily', price: 480, img: 'Tiger Lily.jpg' },
+                { id: 14, name: 'Golden Lily', price: 450, img: 'Golden Lily.jpg' },
+                { id: 15, name: 'Pure Calla', price: 520, img: 'Pure Calla.jpg' }
+            ],
+            'Sunflowers': [
+                { id: 16, name: 'Giant Gold', price: 250, img: 'Giant Gold.jpg' },
+                { id: 17, name: 'Autumn Sun', price: 220, img: 'Autumn Sun.jpg' },
+                { id: 18, name: 'Dwarf Teddy', price: 280, img: 'Dwarf Teddy.jpg' },
+                { id: 19, name: 'Summer Glow', price: 240, img: 'Summer Glow.jpg' },
+                { id: 20, name: 'Midnight Oil', price: 500, img: 'Midnight Oil.jpg' }
+            ],
+            'Orchids': [
+                { id: 21, name: 'Zen White', price: 650, img: 'Zen White.jpg' },
+                { id: 22, name: 'Wild Violet', price: 700, img: 'Wild Violet.jpg' },
+                { id: 23, name: 'Dancing Lady', price: 750, img: 'Dancing Lady.jpg' },
+                { id: 24, name: 'Phalaenopsis', price: 680, img: 'Phalaenopsis.jpg' },
+                { id: 25, name: 'Emerald Gem', price: 800, img: 'Emerald Gem.png' }
+            ]
+        };
+
+        function filterCategory(category) {
+            const grid = document.getElementById('product-grid');
+            const btns = document.querySelectorAll('.cat-btn');
+            btns.forEach(b => b.classList.remove('active'));
+            if(event) event.target.classList.add('active');
+            grid.innerHTML = '';
+
+            let itemsToShow = [];
+            if (category === 'All') {
+                Object.values(flowerData).forEach(catArray => itemsToShow.push(...catArray));
+            } else {
+                itemsToShow = flowerData[category] || [];
+            }
+
+            itemsToShow.forEach(item => {
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="product-img" style="background-image: url('${item.img}')"></div>
+                        <div class="product-info">
+                            <h3>${item.name}</h3>
+                            <p class="price">₱${item.price}</p>
+                            <button class="add-btn" onclick="addToCart(${item.id}, '${item.name}', ${item.price})">Add to Cart</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function toggleCart() {
+            document.getElementById('cart-sidebar').classList.toggle('open');
+        }
+
+        function addToCart(id, name, price) {
+            if (cart[id]) {
+                cart[id].qty += 1;
+            } else {
+                cart[id] = { name, price, qty: 1 };
+            }
+            updateCartUI();
+        }
+
+        function updateQuantity(id, change) {
+            cart[id].qty += change;
+            if (cart[id].qty <= 0) {
+                delete cart[id];
+            }
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            const list = document.getElementById('cart-items-list');
+            const totalArea = document.getElementById('cart-total-area');
+            const countBadge = document.getElementById('cart-count');
+            
+            const cartKeys = Object.keys(cart);
+            let totalQty = 0;
+            let totalPrice = 0;
+
+            if (cartKeys.length === 0) {
+                list.innerHTML = '<p style="text-align: center; color: #999; margin-top: 20px;">Your cart is empty</p>';
+                totalArea.style.display = 'none';
+                countBadge.innerText = '0';
+            } else {
+                totalArea.style.display = 'block';
+                list.innerHTML = cartKeys.map(id => {
+                    const item = cart[id];
+                    totalQty += item.qty;
+                    totalPrice += (item.price * item.qty);
+                    return `
+                        <div class="cart-item">
+                            <div class="item-details">
+                                <h3>${item.name}</h3>
+                                <p>₱${item.price.toFixed(2)} ea.</p>
+                                <div class="qty-controls" style="margin-top:8px;">
+                                    <button class="qty-btn" onclick="updateQuantity(${id}, -1)">-</button>
+                                    <span>${item.qty}</span>
+                                    <button class="qty-btn" onclick="updateQuantity(${id}, 1)">+</button>
+                                </div>
+                            </div>
+                            <div class="item-price">₱${(item.price * item.qty).toFixed(2)}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                countBadge.innerText = totalQty;
+                document.getElementById('cart-total-price').innerText = '₱' + totalPrice.toLocaleString(undefined, {minimumFractionDigits: 2});
+            }
+        }
+
+        function generateReceipt() {
+            const modal = document.getElementById('receipt-modal');
+            const content = document.getElementById('receipt-content');
+            const cartKeys = Object.keys(cart);
+            let total = 0;
+
+            const d = new Date();
+            const dateStr = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
+
+            let html = `
+                <div class="receipt-title">ORDER RECEIPT</div>
+                <div class="receipt-subtitle">BLOOM HAVEN by Led</div>
+                <div class="receipt-date">Date: ${dateStr}</div>
+                <div class="receipt-line"></div>
+            `;
+
+            cartKeys.forEach(id => {
+                const item = cart[id];
+                const lineTotal = item.price * item.qty;
+                total += lineTotal;
+                html += `
+                    <div class="receipt-item">
+                        <span>${item.qty}x ${item.name}</span>
+                        <span>₱${lineTotal.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="receipt-line"></div>
+                <div class="receipt-total">
+                    <span>Total Paid:</span>
+                    <span>₱${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </div>
+
+                <div class="receipt-actions">
+                    <button class="btn-wait" onclick="closeReceipt()">Wait Order</button>
+                    <button class="btn-cancel" onclick="closeReceipt()">Cancel Order</button>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            modal.style.display = 'flex';
+
+            cart = {};
+            updateCartUI();
+            toggleCart();
+        }
+
+        function closeReceipt() {
+            document.getElementById('receipt-modal').style.display = 'none';
+        }
+
+        window.onload = () => filterCategory('All');
+    </script>
+</body>
+</html>
